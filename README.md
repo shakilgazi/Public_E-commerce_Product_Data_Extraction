@@ -1,4 +1,4 @@
-# Pipeline_For_Laptop_Data
+# Public_E-commerce_Product_Data_Extraction
 
 ## Overview
 
@@ -15,8 +15,8 @@ This project scrapes data for laptops (product name, price, extraction timestamp
 1.  **Clone the Repository**:
 
     ```bash
-    git clone https://github.com/shakilgazi/Pipeline_for_laptop_data.git
-    cd Pipeline_for_laptop_data
+    git clone https://github.com/shakilgazi/Public_E-commerce_Product_Data_Extraction.git
+    cd Public_E-commerce_Product_Data_Extraction
     ```
 
 2.  **Set Up a Virtual Environment** (recommended):
@@ -51,7 +51,7 @@ This project scrapes data for laptops (product name, price, extraction timestamp
 5.  **Add Google API Credentials**:
 
     - Download `credentials.json` from Google Cloud Console (with Sheets API enabled).
-    - Place `credentials.json` in the project directory (`Pipeline_for_laptop_data/`).
+    - Place `credentials.json` in the project directory (`Public_E-commerce_Product_Data_Extraction/`).
 
 6.  **Run the Script**:
 
