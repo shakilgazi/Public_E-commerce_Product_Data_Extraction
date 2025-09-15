@@ -9,7 +9,6 @@ This project scrapes data for laptops (product name, price, extraction timestamp
 - Python 3.8+
 - Google Cloud Project with Sheets API enabled
 - A Google account with access to the Sheet
-- WSL2 (Ubuntu) or a compatible environment (optional)
 
 ## Setup Instructions
 
