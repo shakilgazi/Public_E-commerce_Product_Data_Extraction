@@ -62,7 +62,7 @@ def scrape_laptops():
         time.sleep(2)
         
         # Find product elements
-        products = driver.find_elements(By.CLASS_NAME, 'thumbnail')[:10]  # Limit to first 10
+        products = driver.find_elements(By.CLASS_NAME, 'thumbnail')[:100]  # Limit to first 10
         data = []
         for product in products:
             try:
