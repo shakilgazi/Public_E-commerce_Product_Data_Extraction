@@ -23,7 +23,7 @@ load_dotenv()
 # Google Sheets API setup
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SHEET_ID = os.getenv('SHEET_ID')  # From .env
-SHEET_NAME = 'Laptop Data'
+SHEET_NAME = 'Laptop Data 2'
 
 def get_sheets_service():
     """Authenticate and return Google Sheets API service."""
@@ -59,19 +59,106 @@ def scrape_laptops():
         logger.info(f"Navigated to {url}")
         
         # Wait for page to load
-        time.sleep(2)
+        time.sleep(5)  # Adjusted to 5 seconds as per previous setup
         
-        # Find product elements
-        products = driver.find_elements(By.CLASS_NAME, 'thumbnail')[:100]  # Limit to first 10
+        # Find product elements using XPath
+        products = driver.find_elements(By.XPATH, '//div[@class="card thumbnail"]')[:100]  # Limit to first 10
         data = []
         for product in products:
             try:
-                name = product.find_element(By.CLASS_NAME, 'title').text.strip()
-                price = product.find_element(By.CLASS_NAME, 'price').text.strip()
-                product_url = product.find_element(By.CLASS_NAME, 'title').get_attribute('href')
-                timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                data.append([name, price, timestamp, product_url])
-                logger.info(f"Scraped: {name}, {price}, {product_url}")
+                product_data = {}
+                
+                # Product name
+                name_elements = product.find_elements(By.XPATH, './/h4/a[@class="title"]')
+                if name_elements:
+                    product_text_name = driver.execute_script(
+                        "return arguments[0].textContent;", name_elements[0]
+                    ).strip()
+                    if product_text_name:
+                        product_data['Product Name'] = product_text_name
+                    else:
+                        product_data['Product Name'] = "N/A text not found"
+                else:
+                    product_data['Product Name'] = "N/A path not found"
+                
+                # Product price
+                price_elements = product.find_elements(By.XPATH, './/h4[@class="price float-end card-title pull-right"]/span')
+                if price_elements:
+                    product_text_price = driver.execute_script(
+                        "return arguments[0].textContent;", price_elements[0]
+                    ).strip()
+                    if product_text_price:
+                        product_data['Product Price'] = product_text_price
+                    else:
+                        product_data['Product Price'] = "N/A text not found"
+                else:
+                    product_data['Product Price'] = "N/A path not found"
+
+                # Product Description
+                description_elements = product.find_elements(By.XPATH, './/p[@class="description card-text"]')
+                if description_elements:
+                    product_text_description = driver.execute_script(
+                        "return arguments[0].textContent;", description_elements[0]
+                    ).strip()
+                    if product_text_description:
+                        product_data['Product Description'] = product_text_description
+                    else:
+                        product_data['Product Description'] = "N/A text not found"
+                else:
+                    product_data['Product Description'] = "N/A path not found"
+                
+                # Product URL
+                url_elements = product.find_elements(By.XPATH, './/h4/a[@class="title"]')
+                if url_elements:
+                    product_url = driver.execute_script(
+                        "return arguments[0].getAttribute('href');", url_elements[0]
+                    )
+                    if product_url:
+                        product_data['Product URL'] = f"https://webscraper.io{product_url}"
+                    else:
+                        product_data['Product URL'] = "N/A href not found"
+                else:
+                    product_data['Product URL'] = "N/A path not found"
+
+                # Product Review
+                Review_elements = product.find_elements(By.XPATH, './/p[@class="review-count float-end"]/span')
+                if Review_elements:
+                    product_text_Review = driver.execute_script(
+                        "return arguments[0].textContent;", Review_elements[0]
+                    ).strip()
+                    if product_text_Review:
+                        product_data['Number of Review'] = product_text_Review
+                    else:
+                        product_data['Number of Review'] = "N/A text not found"
+                else:
+                    product_data['Number of Review'] = "N/A path not found"
+
+                # Product Rating
+                Rating_elements = product.find_elements(By.XPATH, './/p[@data-rating]')
+                if Rating_elements:
+                    product_text_Rating = driver.execute_script(
+                        "return arguments[0].getAttribute('data-rating');", Rating_elements[0]
+                    ).strip()
+                    if product_text_Rating:
+                        product_data['Number of Rating'] = product_text_Rating
+                    else:
+                        product_data['Number of Rating'] = "N/A text not found"
+                else:
+                    product_data['Number of Rating'] = "N/A path not found"
+                
+                # Timestamp
+                product_data['Extraction Timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                
+                data.append([
+                    product_data['Product Name'],
+                    product_data['Product Price'],
+                    product_data['Product Description'],
+                    product_data['Number of Review'],
+                    product_data['Number of Rating'],
+                    product_data['Product URL'],
+                    product_data['Extraction Timestamp']
+                ])
+                logger.info(f"Scraped:{product_data['Product Name']}, {product_data['Product Price']}, {product_data['Product Description']}, {product_data['Number of Review']}, {product_data['Number of Rating']}, {product_data['Product URL']}, {product_data['Extraction Timestamp']}")
             except Exception as e:
                 logger.warning(f"Error scraping a product: {e}")
                 continue
@@ -99,7 +186,14 @@ def append_to_sheets(service, data):
         # Add headers if sheet is empty
         result = sheet.values().get(spreadsheetId=SHEET_ID, range=f'{SHEET_NAME}!A1:D1').execute()
         if not result.get('values'):
-            headers = ['Product Name', 'Price', 'Extraction Timestamp', 'Product URL']
+            headers = [
+                'Product Name', 
+                'Product Price', 
+                'Product Description', 
+                'Number of Review', 
+                'Number of Rating', 
+                'Product URL', 
+                'Extraction Timestamp']
             sheet.values().update(
                 spreadsheetId=SHEET_ID,
                 range=f'{SHEET_NAME}!A1',
@@ -144,5 +238,8 @@ if __name__ == '__main__':
     main()
 
 
-#python scrape_laptop.py
+#python scrape_laptop_2.py
+
+
+
 
