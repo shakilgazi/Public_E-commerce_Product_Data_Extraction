@@ -25,6 +25,7 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SHEET_ID = os.getenv('SHEET_ID')  # From .env
 SHEET_NAME = 'Laptop Data'
 
+# function for Sheet service
 def get_sheets_service():
     """Authenticate and return Google Sheets API service."""
     try:
@@ -46,8 +47,9 @@ def get_sheets_service():
         logger.error(f"Error setting up Google Sheets API: {e}")
         raise
 
+# function for Scrape data
 def scrape_laptops():
-    """Scrape first 10 laptops' name, price, and URL from the e-commerce site."""
+    """Scrape first 100 laptops' name, price, brand, description, ratings, reviews and URL from the e-commerce site."""
     try:
         # Setup Selenium
         chrome_options = Options()
@@ -59,10 +61,10 @@ def scrape_laptops():
         logger.info(f"Navigated to {url}")
         
         # Wait for page to load
-        time.sleep(5)  # Adjusted to 5 seconds as per previous setup
+        time.sleep(5)  # Adjusted to 5 seconds
         
         # Find product elements using XPath
-        products = driver.find_elements(By.XPATH, '//div[@class="card thumbnail"]')[:100]  # Limit to first 10
+        products = driver.find_elements(By.XPATH, '//div[@class="card thumbnail"]')[:100]  # Limit to first 100
         data = []
         for product in products:
             try:
@@ -183,6 +185,7 @@ def scrape_laptops():
         logger.error(f"Error during web scraping: {e}")
         raise
 
+# function for append data
 def append_to_sheets(service, data):
     """Append scraped data to Google Sheet."""
     try:
@@ -229,8 +232,9 @@ def append_to_sheets(service, data):
         logger.error(f"Error appending to Google Sheet: {e}")
         raise
 
+# main function
 def main():
-    """Main function to execute the scraping and data storage."""
+    """Main function to execute the sheet service, the scraping and data storage."""
     try:
         # Get Google Sheets service
         sheets_service = get_sheets_service()
