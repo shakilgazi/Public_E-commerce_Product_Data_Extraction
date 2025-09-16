@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project scrapes data for laptops (product name, price, extraction timestamp, and product URL) from [Webscraper.io's test e-commerce site](https://webscraper.io/test-sites/e-commerce/allinone/computers/laptops) and saves the data to a Google Sheet in the "Laptop Data" tab.
+This project scrapes data for laptops (product name, Product price, Brand with model, Description, Number of Rating, Number of Review, extraction timestamp, and product URL) from [Webscraper.io's test e-commerce site](https://webscraper.io/test-sites/e-commerce/allinone/computers/laptops) and saves the data to a Google Sheet in the "Laptop Data" tab.
 
 ## Prerequisites
 
@@ -77,7 +77,7 @@ This project scrapes data for laptops (product name, price, extraction timestamp
 ## Notes
 
 - The Google Sheet must have view access for verification (Share > Anyone with the link > Viewer).
-- The script creates the "Laptop Data" tab with headers: Product Name, Price, Extraction Timestamp, Product URL.
+- The script creates the "Laptop Data" tab with headers: Product Name, Product Price, Brand with model, Description, Number of Review, Number or Rating, Extraction Timestamp, Product URL.
 
 ## Dependencies
 
