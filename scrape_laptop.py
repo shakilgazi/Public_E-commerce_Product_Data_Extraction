@@ -23,7 +23,7 @@ load_dotenv()
 # Google Sheets API setup
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 SHEET_ID = os.getenv('SHEET_ID')  # From .env
-SHEET_NAME = 'Laptop Data 2'
+SHEET_NAME = 'Laptop Data'
 
 def get_sheets_service():
     """Authenticate and return Google Sheets API service."""
@@ -72,7 +72,7 @@ def scrape_laptops():
                 name_elements = product.find_elements(By.XPATH, './/h4/a[@class="title"]')
                 if name_elements:
                     product_text_name = driver.execute_script(
-                        "return arguments[0].textContent;", name_elements[0]
+                        "return arguments[0].getAttribute('title');", name_elements[0]
                     ).strip()
                     if product_text_name:
                         product_data['Product Name'] = product_text_name
@@ -80,6 +80,19 @@ def scrape_laptops():
                         product_data['Product Name'] = "N/A text not found"
                 else:
                     product_data['Product Name'] = "N/A path not found"
+
+                # Brand with model
+                Brand_with_model_elements = product.find_elements(By.XPATH, './/h4/a[@class="title"]')
+                if Brand_with_model_elements:
+                    product_text_Brand_with_model = driver.execute_script(
+                        "return arguments[0].textContent;", name_elements[0]
+                    ).strip()
+                    if product_text_Brand_with_model:
+                        product_data['Brand with model'] = product_text_Brand_with_model
+                    else:
+                        product_data['Brand with model'] = "N/A text not found"
+                else:
+                    product_data['Brand with model'] = "N/A path not found"
                 
                 # Product price
                 price_elements = product.find_elements(By.XPATH, './/h4[@class="price float-end card-title pull-right"]/span')
@@ -152,13 +165,14 @@ def scrape_laptops():
                 data.append([
                     product_data['Product Name'],
                     product_data['Product Price'],
+                    product_data['Brand with model'],
                     product_data['Product Description'],
                     product_data['Number of Review'],
                     product_data['Number of Rating'],
                     product_data['Product URL'],
                     product_data['Extraction Timestamp']
                 ])
-                logger.info(f"Scraped:{product_data['Product Name']}, {product_data['Product Price']}, {product_data['Product Description']}, {product_data['Number of Review']}, {product_data['Number of Rating']}, {product_data['Product URL']}, {product_data['Extraction Timestamp']}")
+                logger.info(f"Scraped:{product_data['Product Name']}, {product_data['Product Price']}, {product_data['Brand with model']},, {product_data['Product Description']}, {product_data['Number of Review']}, {product_data['Number of Rating']}, {product_data['Product URL']}, {product_data['Extraction Timestamp']}")
             except Exception as e:
                 logger.warning(f"Error scraping a product: {e}")
                 continue
@@ -188,7 +202,8 @@ def append_to_sheets(service, data):
         if not result.get('values'):
             headers = [
                 'Product Name', 
-                'Product Price', 
+                'Product Price',
+                'Brand with model', 
                 'Product Description', 
                 'Number of Review', 
                 'Number of Rating', 
