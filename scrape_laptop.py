@@ -238,7 +238,7 @@ if __name__ == '__main__':
     main()
 
 
-#python scrape_laptop_2.py
+#python scrape_laptop.py
 
 
 
