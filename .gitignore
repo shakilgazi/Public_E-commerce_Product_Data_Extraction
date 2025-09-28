@@ -2,3 +2,6 @@
 token.json
 credentials.json
 .env
+scrape_laptop.py
+scrape_laptop_2.py
+test_auth.py
